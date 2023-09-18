@@ -91,6 +91,14 @@ func (s *sub) Loop() {
 
 		startFetch := time.After(fetchDelay)
 
+		var first Item
+		var updates chan Item
+
+		if len(pending) > 0 {
+			first = pending[0]
+			updates = s.updates // enable send case
+		}
+
 		select {
 		case <-startFetch:
 			fetchDone = make(chan fetchResult, 1)
@@ -115,6 +123,8 @@ func (s *sub) Loop() {
 			errc <- err
 			close(s.updates)
 			return
+		case updates <- first:
+			pending = pending[1:]
 		}
 
 	}
@@ -124,6 +134,7 @@ func Subscribe(fetch Fetcher) Subscription {
 	s := &sub{
 		fetcher: fetch,
 		updates: make(chan Item),
+		closing: make(chan chan error),
 	}
 
 	go s.Loop()
