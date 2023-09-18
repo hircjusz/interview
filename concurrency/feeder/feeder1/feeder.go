@@ -102,8 +102,10 @@ func (s *sub) Loop() {
 		select {
 		case <-startFetch:
 			fetchDone = make(chan fetchResult, 1)
-			fetched, next, err := s.fetcher.Fetch()
-			fetchDone <- fetchResult{fetched: fetched, next: next, err: err}
+			go func() {
+				fetched, next, err := s.fetcher.Fetch()
+				fetchDone <- fetchResult{fetched: fetched, next: next, err: err}
+			}()
 
 		case result := <-fetchDone:
 
