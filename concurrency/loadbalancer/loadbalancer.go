@@ -1,7 +1,6 @@
 package main
 
 import (
-	"container/heap"
 	"time"
 )
 
@@ -30,5 +29,4 @@ func requester(work chan<- Request) {
 }
 
 func main() {
-	h := heap.Init(myHeap{})
 }
