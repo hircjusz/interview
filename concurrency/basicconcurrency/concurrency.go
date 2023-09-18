@@ -1,4 +1,4 @@
-package concurrency
+package basicconcurrency
 
 import (
 	"fmt"
@@ -64,4 +64,21 @@ func channelAwaitMessage() {
 	println(message)
 	waitGroup.Wait()
 
+}
+
+func blockingChannelMessage() {
+	channel := make(chan string, 1)
+
+	go func(ch chan<- string) {
+		channel <- "Hello world"
+		channel <- "Hello world 2"
+	}(channel)
+
+	receivingCh(channel)
+
+}
+
+func receivingCh(ch <-chan string) {
+	msg := <-ch
+	println(msg)
 }

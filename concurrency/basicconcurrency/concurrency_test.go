@@ -1,4 +1,4 @@
-package concurrency
+package basicconcurrency
 
 import (
 	"fmt"
@@ -28,4 +28,8 @@ func TestMessageChannel(t *testing.T) {
 
 func TestChannelAwait(t *testing.T) {
 	//channelAwaitMessage()
+}
+
+func TestBlockingChannel(t *testing.T) {
+	blockingChannelMessage()
 }
