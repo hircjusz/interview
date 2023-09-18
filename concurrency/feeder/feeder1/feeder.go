@@ -39,7 +39,7 @@ func (f *fakeFetcher) Fetch() (items []Item, next time.Time, err error) {
 	}
 	item.Guid = item.Channel + "/" + item.Title
 	f.items = append(f.items, item)
-	return
+	return f.items, next, err
 }
 
 type fakeFetcher struct {
@@ -52,44 +52,69 @@ func init() {
 }
 
 type sub struct {
-	fetcher    Fetcher
-	updatesChn chan Item
-	closed     bool
-	err        error
+	fetcher Fetcher
+	updates chan Item
+	closing chan chan error
 }
 
 func (s *sub) Updates() <-chan Item {
 
-	return s.updatesChn
+	return s.updates
 }
 
 func (s *sub) Close() error {
-	s.closed = true
-	//close(s.updatesChn)
+	errc := make(chan error)
+	s.closing <- errc
+	return <-errc
+}
 
-	return s.err
+type fetchResult struct {
+	fetched []Item
+	next    time.Time
+	err     error
 }
 
 func (s *sub) Loop() {
+
+	var pending []Item
+	var next time.Time
+	var err error
+
+	var fetchDone chan fetchResult
+
 	for {
-		if s.closed {
-			close(s.updatesChn)
-			return
-		}
-
-		items, next, err := s.fetcher.Fetch()
-		if err != nil {
-			s.err = err
-			time.Sleep(10 * time.Second)
-			continue
-		}
-
-		for _, item := range items {
-			s.updatesChn <- item
-		}
+		var fetchDelay time.Duration
 
 		if now := time.Now(); next.After(now) {
-			time.Sleep(next.Sub(now))
+			fetchDelay = next.Sub(now)
+		}
+
+		startFetch := time.After(fetchDelay)
+
+		select {
+		case <-startFetch:
+			fetchDone = make(chan fetchResult, 1)
+			fetched, next, err := s.fetcher.Fetch()
+			fetchDone <- fetchResult{fetched: fetched, next: next, err: err}
+
+		case result := <-fetchDone:
+
+			fetchDone = nil
+			fetched := result.fetched
+			next, err = result.next, result.err
+
+			if err != nil {
+				next = time.Now().Add(10 * time.Second)
+				break
+			}
+
+			for _, item := range fetched {
+				pending = append(pending, item)
+			}
+		case errc := <-s.closing:
+			errc <- err
+			close(s.updates)
+			return
 		}
 
 	}
@@ -97,8 +122,8 @@ func (s *sub) Loop() {
 
 func Subscribe(fetch Fetcher) Subscription {
 	s := &sub{
-		fetcher:    fetch,
-		updatesChn: make(chan Item),
+		fetcher: fetch,
+		updates: make(chan Item),
 	}
 
 	go s.Loop()
@@ -112,25 +137,25 @@ type merge struct {
 	errs    chan error
 }
 
-func Merge(subs ...Subscription) Subscription {
-
-	for _, sub := range subs {
-		go func(s Subscription) {
-			for {
-				var it Item
-				select {
-				case it = <-s.Updates():
-				}
-
-				//select {
-				//  case
-				//}
-			}
-		}(sub)
-	}
-
-	return nil
-}
+//func Merge(subs ...Subscription) Subscription {
+//
+//	for _, sub := range subs {
+//		go func(s Subscription) {
+//			for {
+//				var it Item
+//				select {
+//				case it = <-s.Updates():
+//				}
+//
+//				//select {
+//				//  case
+//				//}
+//			}
+//		}(sub)
+//	}
+//
+//	return nil
+//}
 
 func main() {
 
