@@ -203,12 +203,72 @@ func (m *merge) Close() (err error) {
 	return
 }
 
+type deduplicate struct {
+	s       Subscription
+	updates chan Item
+	closing chan chan error
+}
+
+func DeDuplicate(s Subscription) Subscription {
+	d := &deduplicate{
+		s:       s,
+		updates: make(chan Item),
+		closing: make(chan chan error),
+	}
+	go d.loop()
+	return d
+}
+
+func (d *deduplicate) loop() {
+
+	in := d.s.Updates()
+	var pending Item
+	var out chan Item
+	seen := make(map[string]bool)
+
+	for {
+		select {
+		case it := <-in:
+			if !seen[it.Guid] {
+				pending = it
+				in = nil
+				out = d.updates
+				seen[it.Guid] = true
+			}
+		case out <- pending:
+			{
+				in = d.s.Updates()
+				out = nil
+			}
+		case errc := <-d.closing:
+			{
+				err := d.s.Close()
+				errc <- err
+				close(d.updates)
+				return
+			}
+
+		}
+	}
+
+}
+
+func (d *deduplicate) Close() error {
+	errc := make(chan error)
+	d.closing <- errc
+	return <-errc
+}
+
+func (d *deduplicate) Updates() <-chan Item {
+	return d.updates
+}
+
 func main() {
 
 	subscription := Merge(
-		Subscribe(Fetch("blog.golang.org")),
-		Subscribe(Fetch("googleblog.blogspot.com")),
-		Subscribe(Fetch("googledevelopers.blogspot.com")))
+		DeDuplicate(Subscribe(Fetch("blog.golang.org"))),
+		DeDuplicate(Subscribe(Fetch("googleblog.blogspot.com"))),
+		DeDuplicate(Subscribe(Fetch("googledevelopers.blogspot.com"))))
 
 	time.AfterFunc(3*time.Second, func() {
 		println("closed: ", subscription.Close())
