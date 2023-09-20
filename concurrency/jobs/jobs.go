@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 )
 
 func do(job string) error {
 	fmt.Println("doing job", job)
-	time.Sleep(1 * time.Second)
+	time.Sleep(time.Duration(rand.Intn(500)) * time.Millisecond)
 	return fmt.Errorf("something went wrong %s", job)
 }
 
