@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"hash/fnv"
+)
 
 //{ [  }         [] { ] }  [         ]
 
@@ -73,6 +76,10 @@ func unpaint(paints []int) []int {
 }
 
 func main() {
+
+	h := fnv.New32a()
+	h.Write([]byte("Hello"))
+	fmt.Println(h.Sum32())
 
 	paints := []int{3, 10, 14, 20, 1, 5}
 
