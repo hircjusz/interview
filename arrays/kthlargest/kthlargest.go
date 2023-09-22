@@ -48,7 +48,7 @@ func findKthLargest(nums []int, k int) int {
 		}
 	}
 
-	el, _ := search(distinct, len(nums)-k)
+	el, _ := search(distinct, len(distinct)-k)
 	return el
 }
 
