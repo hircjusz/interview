@@ -14,14 +14,14 @@ func search(arr []int, ix int) (int, bool) {
 
 	left, right := partition(arr, ix)
 
-	if len(left)-1 == ix || right == nil {
+	if len(left)-1 == ix {
 		return left[ix], true
 	}
 
 	if ix < len(left) {
 		return search(left, ix)
 	}
-	return search(right, ix-len(left)+1)
+	return search(right, ix-len(left))
 }
 
 func partition(arr []int, ix int) (left []int, right []int) {
@@ -30,7 +30,7 @@ func partition(arr []int, ix int) (left []int, right []int) {
 	for _, v := range arr {
 		if v < pivot {
 			left = append(left, v)
-		} else {
+		} else if v > pivot {
 			right = append(right, v)
 		}
 	}
@@ -48,7 +48,7 @@ func findKthLargest(nums []int, k int) int {
 		}
 	}
 
-	el, _ := search(distinct, k-1)
+	el, _ := search(distinct, len(nums)-k)
 	return el
 }
 
