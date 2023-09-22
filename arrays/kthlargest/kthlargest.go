@@ -28,14 +28,14 @@ func partition(arr []int, ix int) (left []int, right []int) {
 	pivot := arr[ix]
 
 	for _, v := range arr {
-		if v <= pivot {
+		if v < pivot {
 			left = append(left, v)
 		} else {
 			right = append(right, v)
 		}
 	}
 
-	return left, right
+	return append(left, pivot), right
 }
 
 func findKthLargest(nums []int, k int) int {
