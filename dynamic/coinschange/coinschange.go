@@ -9,13 +9,6 @@ func min(i, j int) int {
 	return j
 }
 
-func max(i, j int) int {
-	if i > j {
-		return i
-	}
-	return j
-}
-
 func coinschange(coins []int, m int) int {
 
 	dp := make([]int, m+1)
