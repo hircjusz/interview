@@ -9,6 +9,7 @@ type Node struct {
 
 	leftVisited  bool
 	rightVisited bool
+	Level        int
 }
 
 type Tree struct {
