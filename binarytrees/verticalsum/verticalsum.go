@@ -20,6 +20,7 @@ func traverseTree(node *treebuilder.Node, hd int) {
 
 func verticalSum(arr []int) []int {
 	tr := treebuilder.CreateTree(arr)
+	sumVertical = make(map[int]int)
 	traverseTree(tr.Root, 0)
 
 	var ans []int
