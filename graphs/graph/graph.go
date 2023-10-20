@@ -9,6 +9,10 @@ type Graph struct {
 func NewGraph() *Graph {
 	return &Graph{make(map[int][]*queue.Edge)}
 }
+
+func (g *Graph) NodesCount() int {
+	return len(g.adj)
+}
 func (g *Graph) AllEdges() map[int][]*queue.Edge {
 	return g.adj
 }

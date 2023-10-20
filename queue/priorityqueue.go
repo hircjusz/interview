@@ -1,6 +1,8 @@
 package queue
 
-import "sort"
+import (
+	"sort"
+)
 
 type PriorityQueue struct {
 	q *Queue
@@ -23,4 +25,12 @@ func (pq *PriorityQueue) Top() *Edge {
 
 func (pq *PriorityQueue) Pop() *Edge {
 	return pq.q.Pop()
+}
+
+func (pq *PriorityQueue) Empty() bool {
+	return pq.q.Empty()
+}
+
+func (pq *PriorityQueue) Print() {
+	println((pq.q.a))
 }
