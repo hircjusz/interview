@@ -21,7 +21,7 @@ func (g *Graph) Edges(v int) []*queue.Edge {
 	return g.adj[v]
 }
 
-func (g *Graph) Push(v, w, weight int) {
+func (g *Graph) PushWeighted(v, w, weight int) {
 
 	if g.adj[v] == nil {
 		g.adj[v] = make([]*queue.Edge, 0)
@@ -34,4 +34,19 @@ func (g *Graph) Push(v, w, weight int) {
 	}
 
 	g.adj[w] = append(g.adj[w], &queue.Edge{V: v, Weight: weight})
+}
+
+func (g *Graph) Push(v, w int) {
+
+	if g.adj[v] == nil {
+		g.adj[v] = make([]*queue.Edge, 0)
+	}
+
+	g.adj[v] = append(g.adj[v], &queue.Edge{V: w})
+
+	if g.adj[w] == nil {
+		g.adj[w] = make([]*queue.Edge, 0)
+	}
+
+	g.adj[w] = append(g.adj[w], &queue.Edge{V: v})
 }

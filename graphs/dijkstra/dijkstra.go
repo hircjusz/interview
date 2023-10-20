@@ -55,12 +55,12 @@ func dijkstra(g *graph.Graph, src, dest int) int {
 func main() {
 
 	g := graph.NewGraph()
-	g.Push(0, 1, 1)
-	g.Push(1, 2, 1)
-	g.Push(0, 2, 4)
-	g.Push(0, 3, 7)
-	g.Push(3, 2, 2)
-	g.Push(3, 4, 3)
+	g.PushWeighted(0, 1, 1)
+	g.PushWeighted(1, 2, 1)
+	g.PushWeighted(0, 2, 4)
+	g.PushWeighted(0, 3, 7)
+	g.PushWeighted(3, 2, 2)
+	g.PushWeighted(3, 4, 3)
 
 	dijkstra(g, 0, 4)
 	//test
