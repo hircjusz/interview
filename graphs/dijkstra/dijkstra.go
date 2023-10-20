@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"interview/queue"
+	"math"
 )
 
 type graph struct {
@@ -27,10 +28,16 @@ func (g *graph) push(v, w, weight int) {
 func dijkstra(g *graph, src, dest int) int {
 
 	dist := map[int]int{}
+
+	for key, _ := range g.adj {
+
+		dist[key] = math.MaxInt
+	}
+
 	dist[src] = 0
 	q := queue.New()
 
-	q.Push(&queue.Edge{V: src, Weight: 0})
+	q.PushNode(src, 0)
 
 	for !q.Empty() {
 
@@ -38,27 +45,26 @@ func dijkstra(g *graph, src, dest int) int {
 
 		node := it.V
 		weight := it.Weight
-		q.Erase(it)
+		q.EraseByEdge(it)
 
-		for _, nbrEdge := range g.adj[node] {
+		for _, neighbor := range g.adj[node] {
 
-			nbrNode := nbrEdge.V
-			nbrWeight := nbrEdge.Weight
+			neighborNode := neighbor.V
+			neighborWeight := neighbor.Weight
 
-			if weight+nbrWeight < dist[nbrNode] {
-				f := q.Find(&queue.Edge{V: nbrNode, Weight: dist[nbrNode]})
-				if *f != *q.End() {
-					q.Erase(f)
-				}
-				dist[nbrNode] = weight + nbrWeight
-				q.Push(&queue.Edge{V: nbrNode, Weight: dist[nbrNode]})
+			newDist := weight + neighborWeight
+
+			if newDist < dist[neighborNode] {
+				q.EraseByNode(neighborNode)
+				dist[neighborNode] = newDist
+				q.PushNode(neighborNode, dist[neighborNode])
 			}
-
 		}
 
 	}
 	for i, v := range dist {
-		fmt.Printf("Node i %d, Dist %d", i, v)
+		fmt.Printf("Node  %d, Dist %d", i, v)
+		fmt.Println()
 	}
 
 	return dist[dest]
@@ -70,7 +76,7 @@ func main() {
 		adj: map[int][]*queue.Edge{},
 	}
 	g.push(0, 1, 1)
-	g.push(1, 2, 2)
+	g.push(1, 2, 1)
 	g.push(0, 2, 4)
 	g.push(0, 3, 7)
 	g.push(3, 2, 2)

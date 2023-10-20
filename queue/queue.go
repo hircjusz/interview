@@ -23,8 +23,12 @@ func (q *Queue) End() *Edge {
 	return q.a[len(q.a)-1]
 }
 
-func (q *Queue) Push(n *Edge) {
+func (q *Queue) PushEdge(n *Edge) {
 	q.a = append(q.a, n)
+}
+
+func (q *Queue) PushNode(node, weight int) {
+	q.a = append(q.a, &Edge{V: node, Weight: weight})
 }
 
 func (q *Queue) Pop() *Edge {
@@ -36,7 +40,7 @@ func (q *Queue) Empty() bool {
 	return len(q.a) == 0
 }
 
-func (q *Queue) Find(edge *Edge) *Edge {
+func (q *Queue) FindByEdge(edge *Edge) *Edge {
 	j := -1
 
 	for i, node := range q.a {
@@ -51,11 +55,46 @@ func (q *Queue) Find(edge *Edge) *Edge {
 	return q.a[j]
 }
 
-func (q *Queue) Erase(erase *Edge) {
+func (q *Queue) FindByNode(v int) *Edge {
+	j := -1
+
+	for i, node := range q.a {
+		if node.V == v {
+			j = i
+			break
+		}
+	}
+	if j == -1 {
+		return nil
+	}
+	return q.a[j]
+}
+
+func (q *Queue) EraseByEdge(erase *Edge) {
 	j := -1
 
 	for i, node := range q.a {
 		if *node == *erase {
+			j = i
+			break
+		}
+	}
+	if j == -1 {
+		return
+	}
+
+	var q2 []*Edge
+	q2 = append(q2, q.a[:j]...)
+	q2 = append(q2, q.a[j+1:]...)
+	q.a = q2
+
+}
+
+func (q *Queue) EraseByNode(v int) {
+	j := -1
+
+	for i, node := range q.a {
+		if node.V == v {
 			j = i
 			break
 		}
