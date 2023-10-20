@@ -77,4 +77,5 @@ func main() {
 	g.push(3, 4, 3)
 
 	dijkstra(&g, 0, 4)
+	//test
 }
