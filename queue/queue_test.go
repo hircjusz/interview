@@ -13,7 +13,7 @@ func TestQueue(t *testing.T) {
 			a: []*Edge{{V: 2}, {V: 5}, {V: 4}, {V: 1}, {V: 0}},
 		}
 
-		res := q.Find(&Edge{V: 4})
+		res := q.FindByEdge(&Edge{V: 4})
 		assert.NotNil(t, res)
 	})
 
@@ -23,7 +23,7 @@ func TestQueue(t *testing.T) {
 			a: []*Edge{{V: 2}, {V: 5}, {V: 4}, {V: 1}, {V: 0}},
 		}
 
-		q.Erase(&Edge{V: 4})
+		q.EraseByEdge(&Edge{V: 4})
 		assert.Equal(t, 4, len(q.a))
 	})
 
@@ -33,7 +33,7 @@ func TestQueue(t *testing.T) {
 			a: []*Edge{{V: 2}, {V: 5}, {V: 4}, {V: 1}, {V: 0}},
 		}
 
-		q.Erase(&Edge{V: 0})
+		q.EraseByEdge(&Edge{V: 0})
 		assert.Equal(t, 4, len(q.a))
 	})
 
@@ -43,7 +43,7 @@ func TestQueue(t *testing.T) {
 			a: []*Edge{{V: 2}, {V: 5}, {V: 4}, {V: 1}, {V: 0}},
 		}
 
-		q.Erase(&Edge{V: 0})
+		q.EraseByEdge(&Edge{V: 0})
 		assert.Equal(t, 4, len(q.a))
 	})
 }
